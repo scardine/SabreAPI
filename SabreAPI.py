@@ -65,7 +65,7 @@ class Sabre(object):
                     kwargs = {"data": kwargs}
                     
                 result = self.call_method(method.lower(), self.server + e, *args, **kwargs)
-                assert result.status_code is 200, u"Status code is {} (expecting 200)".format(result.status_code)
+                assert result.status_code is 200, u"Got a {} (expecting 200): {}".format(result.status_code, result.json())
                 return result.json()
             
             obj.endpoint = endpoint
@@ -105,3 +105,7 @@ class Sabre(object):
     
     def post(self, *args, **kwargs):
         return self.call_method('post', *args, **kwargs)
+    
+    def api_list(self):
+        for api_name, (method, endpoint, description) in self.APIS.items():
+            print(u"{}: {} (endpoint: {} {})".format(api_name, description, method, endpoint))
