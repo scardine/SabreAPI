@@ -31,13 +31,16 @@ class Sabre(object):
         'v1.shop.flights' : ('GET', '/v1/shop/flights', 'InstaFlights Search API'),
     }
     
-    def __init__(self, client_id, client_secret):
+    def __init__(self, client_id, client_secret, server='https://api.test.sabre.com'):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.credentials = self.encode_credentials()
+        self.server = server
+        self.credentials = self.encode_credentials()  
         
         class Container(object):
-            pass
+            def __call__(self, *args, **kwargs):
+                return self._call(self.endpoint, *args, **kwargs)
+            
         self.api = Container()
         
         for api_name, (method, endpoint, description) in self.APIS.items():
@@ -48,14 +51,15 @@ class Sabre(object):
                     setattr(obj, part, Container())
                 obj = getattr(obj, part)
                     
-            def fn(s, *args, **kwargs):
+            def fn(s, endpoint, *args, **kwargs):
                 if '{' in endpoint:
                     endpoint = endpoint.format(**kwargs)
-                result = self.call_method(method.lower(), endpoint, *args, **kwargs)
+                result = self.call_method(method.lower(), self.server + endpoint, *args, **kwargs)
                 assert result.status_code is 200, u"Status code is {} (expecting 200)".format(result.status_code)
                 return result.json()
             
-            obj.__call__ = types.MethodType(fn, obj, Container)
+            obj.endpoint = endpoint
+            obj._call = types.MethodType(fn, obj, Container)
         
     def is_valid(self):
         self.last_check = time.time()
