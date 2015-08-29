@@ -19,7 +19,7 @@ Get your client id and secret at https://developer.sabre.com/apps/mykeys
         lengthofstay=1,
     )
     
-When the endpoing is in the form `/v1/foo/{bar}/` you should call it as `sabre.api.v1.foo(bar='spam')`. Example:
+When the endpoint path is in the form `/v1/foo/{bar}/` you must supply a parameter with the same name of the path component, like `sabre.api.v1.foo(bar='spam')`. Example:
 
     # /v1/lists/supported/cities/{city}/airports/
     sabre.api.v1.lists.supported.cities.airports(city='RIO')
