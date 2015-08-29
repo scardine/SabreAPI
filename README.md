@@ -11,6 +11,14 @@ Get your client id and secret at https://developer.sabre.com/apps/mykeys
     sabre = Sabre(client_id, client_secret)
     country_list = sabre.api.v1.lists.supported.countries()
     
+    fares = sabre.api.v1.historical.flights.fares(
+        origin='LAX', 
+        destination='JFK', 
+        earliestdeparturedate='2015-08-30', 
+        latestdeparturedate='2015-08-30', 
+        lengthofstay=1,
+    )
+    
 When the endpoing is in the form `/v1/foo/{bar}/` you should call it as `sabre.api.v1.foo(bar='spam')`. Example:
 
     # /v1/lists/supported/cities/{city}/airports/
