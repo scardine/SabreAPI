@@ -3,6 +3,7 @@ import requests
 import base64
 import types
 import re
+import warnings
 
 class Sabre(object):
     token = None
@@ -82,10 +83,12 @@ class Sabre(object):
             return self.token
         headers = {'Authorization': 'Basic ' + self.credentials}
         params = {'grant_type': 'client_credentials'}
-        r = requests.post(url, headers=headers, data=params)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            r = requests.post(self.server + '/v1/auth/token', headers=headers, data=params)
         assert r.status_code is 200, 'Expecting 200 answer, got {} instead'.format(r.status_code)
         self.token = r.json()
-        self.token['expires'] = self.last_check + token['expires_in']
+        self.token['expires'] = self.last_check + self.token['expires_in']
         return self.token
         
     def encode_credentials(self):
@@ -98,7 +101,9 @@ class Sabre(object):
             kwargs = {}
         kwargs['headers'] = kwargs.get('headers', {})
         kwargs['headers'].update(Authorization='Bearer ' + self.get_token()[u'access_token'])
-        return getattr(requests, method)(*args, **kwargs)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return getattr(requests, method)(*args, **kwargs)
     
     def get(self, *args, **kwargs):
         return self.call_method('get', *args, **kwargs)
