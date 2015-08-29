@@ -2,6 +2,7 @@ import time
 import requests
 import base64
 import types
+import re
 
 class Sabre(object):
     token = None
@@ -52,9 +53,18 @@ class Sabre(object):
                 obj = getattr(obj, part)
                     
             def fn(s, endpoint, *args, **kwargs):
+                e = endpoint
                 if '{' in endpoint:
-                    endpoint = endpoint.format(**kwargs)
-                result = self.call_method(method.lower(), self.server + endpoint, *args, **kwargs)
+                    e = endpoint.format(**kwargs)
+                    for arg in re.findall(r'{(\w+)}', endpoint):
+                        del kwargs[arg]
+                
+                if method == 'GET':
+                    kwargs = {"params": kwargs}
+                else:
+                    kwargs = {"data": kwargs}
+                    
+                result = self.call_method(method.lower(), self.server + e, *args, **kwargs)
                 assert result.status_code is 200, u"Status code is {} (expecting 200)".format(result.status_code)
                 return result.json()
             
