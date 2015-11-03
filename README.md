@@ -2,7 +2,7 @@
 
 Python bindings to the Sabre REST API (https://developer.sabre.com/docs/read/REST_APIs)
 
-This is a quick hack for a Hackathon sponsored by Sabre (the event was sponsored, not this project). Lots of room for improvement, feel free to send a PR.
+This is a quick hack (~100 LoC) I made for a Hackathon sponsored by Sabre (the event was sponsored, not this project). Lots of room for improvement, feel free to send a PR.
 
 ## Usage
 
